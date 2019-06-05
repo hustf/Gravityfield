@@ -1,4 +1,5 @@
 using Test
+push!(LOAD_PATH, joinpath(@__DIR__, "../src"))
 using Gravityfield_unitless
 
 let

@@ -1,9 +1,9 @@
 # ] activate .
 # in vscode, display(gcf()) or just gcf() after each plot.
-# That won't be interactive.
-using Gravityfield_units
+# VSCode use won't be interactive.
+using Gravityfield
+include(joinpath(@__DIR__, "src/plotfield.jl"))
 
-include("plotfield_units.jl")
 "Plot a sphere for phun"
 let
     n = 100

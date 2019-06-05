@@ -1,8 +1,4 @@
 using Test
-push!(LOAD_PATH, joinpath(@__DIR__, "../src"))
-# alternative
-push!(LOAD_PATH, joinpath(pwd(), "Gravityfield_units/src"))
-#include("gravityfield.jl")
 using Gravityfield
 
 let

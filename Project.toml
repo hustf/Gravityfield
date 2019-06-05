@@ -2,3 +2,6 @@ name = "Gravityfield"
 uuid = "27fd9550-87c8-11e9-13be-6f910155f24b"
 authors = ["hustf <hustf@users.noreply.github.com>"]
 version = "0.1.0"
+
+[deps]
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"

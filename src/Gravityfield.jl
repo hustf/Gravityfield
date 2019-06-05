@@ -14,12 +14,15 @@ export earthlikeSphere, earthlikeSphere_r_known, earthlikeSphere_m_known
 export bodies_3d, bodies_2d, bodies_1d
 export rvec, uvec, len, g, gvec, gfieldvals
 export xygrids, sqgrids
+import Base:show, show_circular, _truncate_at_width_or_chars
+
 using Unitful
-import Unitful.FreeUnits
-#  \bfL<tab> displays as an enclose question mark in Windows Julia, 
-# or an Icelandic small d on notepad++. Start from cygwin / mintty or VSCode
-# to get the mathematical bold L.
-import Unitful.𝐋
+#  \bfL<tab> displays as an enclose question mark in Windows Julia,
+# and in VScode terminal. On Notepad++, it shows as an Icelandic 'eth'
+# Start from cygwin / mintty with a good font, or VSCode, in order 
+# to get the mathematical bold L for 'length'.
+import Unitful: FreeUnits, 𝐋
+
 "Shorthands which may cause confusion in other contexts"
 const m = 1.0u"m"
 const m² = 1.0u"m^2"
@@ -58,7 +61,7 @@ const ρ_earth = ρ(m = m_earth, r = r_earth)
 "Position vector"
 const Pos = Vector{Quantity{T,𝐋,U}} where {T,U}
 Pos(p::Pos) = Vector(p)
-import Base.show
+
 function show(io::IO, p::Pos) # short form
     typ = typeof(p)
     ioc = IOContext(io, :typeinfo => typ)
@@ -227,8 +230,6 @@ function bodies_1d()
 end
 
 
-import Base.show_circular
-import Base._truncate_at_width_or_chars
 function show(io::IO, ::MIME"text/plain", bds::Bodies) # long form.
     # show more descriptively, with one line per body. Based on Dict.
     recur_io = IOContext(io, :SHOWN_SET => bds)

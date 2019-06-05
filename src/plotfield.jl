@@ -1,4 +1,5 @@
 using PyPlot
+using Gravityfield
 "Rounding for legends"
 round_sig(x; sig = 3) = round(x, digits = sig - Int(floor(log10(abs(x))))-1)
 
@@ -83,3 +84,4 @@ function wrap_stream_d(x::Matrix, y::Matrix, np::Npos; density = 1., title = "St
         linewidth = lw)
     PyPlot.title(title)
 end
+nothing

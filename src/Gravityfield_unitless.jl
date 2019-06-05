@@ -1,5 +1,22 @@
+# To use this version of 'Gravityfield':
+#push!(LOAD_PATH, joinpath(@__DIR__, "../src")) (or similar)
+# using Gravityfield_unitless
+#
+# Possible TODO: Use Traits to distinguish position vectors.
+# Currently, 
 module Gravityfield_unitless
-# ] activate .
+export γ,  m_earth ,  r_earth ,  r_sun ,  d_sun_earth ,  d_moon_earth, ρ_earth
+export m_sun ,  m_moon ,  yr ,  ρ_sun 
+export V, ρ, Pos, Npos
+export nest, slice_1, slice_2, slice_3, slice_4, slice_5, slice_6
+export Body, Bodies, Sphere
+export earthlikeSphere, earthlikeSphere_r_known, earthlikeSphere_m_known
+export bodies_3d, bodies_2d, bodies_1d
+export rvec, uvec, len, g, gvec, gfieldvals
+export xygrids, sqgrids
+import Base.show
+
+
 "Newton's gravity constant"
 const γ=6.67428E-11 #m^3*kg^-1*s^-2
 const m_earth = 5.97E24 # kg
@@ -21,19 +38,17 @@ const ρ_earth = ρ(m = m_earth, r = r_earth)
 const Pos = Vector{T} where T<:Number
 Pos(p) = Vector(p)
 import Base.show
-function show(io::IO, p::Pos) # short form
-    typ = typeof(p)
-    ioc = IOContext(io, :typeinfo => typ)
-    show(ioc, ustrip(p))
-    printstyled(ioc, unit(eltype(typ)); color=:cyan)
-end
 function show(io::IO, ::MIME"text/plain", p::Pos{T}) where T# long form
     typ = typeof(p)
     ioc = IOContext(io, :typeinfo => typ)
-    print(ioc, "Pos{", T, "}(")
-    show(ioc, ustrip(p))
-    printstyled(ioc, unit(eltype(typ)); color=:cyan)
-    print(ioc, ")")
+    print(ioc, "Pos{", T, "}([")
+    # avoid recursive call
+    typ = typeof(p)
+    ioc = IOContext(io, :typeinfo => typ)
+    for i = 1:(length(p)-1)
+        print(ioc, p[i], ", ")
+    end
+    print(ioc, p[length(p)], "])")
 end
 "Nested positions. Each element is a position vector; the container can be a vector or matrix"
 const Npos = Union{Array{S, 2}, Array{S,1}} where S<:Pos
@@ -157,17 +172,26 @@ Base.@kwdef struct Sphere <: Body
     Sphere(p, m, r) = m > zero(m) && r > zero(r) ? new(p, m, r) : error("no negative m or r")
 end
 
-show(io::IO, b::Sphere) = print(io, "Sphere(p = ", b.p, ", m = ", b.m, ", r = ", b.r, ")")
+function show(io::IO, b::Sphere) # short form
+    ioc = IOContext(io, :typeinfo => typeof(b.p))
+    print(ioc, "Sphere(p = ", b.p, ", m = ", b.m, ", r = ", b.r, ")")
+end
 
+function show(io::IO, mime::MIME"text/plain", b::Sphere) # Long form
+    print(io, "Sphere(p = ")
+    # perhaps unnecessary splitting...
+    show(io, mime, b.p)
+    print(io, ", m = ")
+    show(io, mime, b.m)
+    print(io, ", r = ")
+    show(io, mime,  b.r)
+    print(io, ")")
+end
 "Alternative constructors of Sphere for when mass or radius is unknown"
 earthlikeSphere_m_known(;p = [0, 0, 0], m = m_earth) = Sphere(p, m , (3m / (4π * ρ_earth))^(1/3))
 earthlikeSphere_r_known(;p = [0, 0, 0], r = r_earth) = Sphere(p, ρ_earth * V(r), r)
 
-import Base.show
-function show(io::IO, b::Sphere)
-    ioc = IOContext(io, :typeinfo => typeof(b.p))
-    print(ioc, "Sphere(p = ", b.p, ", m = ", b.m, ", r = ", b.r, ")")
-end
+
 
 
 const Bodies = Vector{T} where T <:Body
