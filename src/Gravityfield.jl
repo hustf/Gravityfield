@@ -21,8 +21,15 @@ using Unitful
 # and in VScode terminal. On Notepad++, it shows as an Icelandic 'eth'
 # Start from cygwin / mintty with a good font, or VSCode, in order 
 # to get the mathematical bold L for 'length'.
-import Unitful: FreeUnits, 𝐋
-
+import Unitful: FreeUnits, isunitless, unit
+# Time, length, mass
+import Unitful: 𝐓, 𝐋, 𝐌
+# Draft, going to separate the units to another package:
+#@unit transportdistance "kgm" TransportDistance u"kg*m" false
+#@unit turn          "τ"             Turn          2π*u"rad"     false
+#@unit transportdistance "kgm" TransportDistance 1u"kg*m" false
+#@unit transportdistance "kgm" TransportDistance 1u"kg*m" false
+#@unit momo "kgm" TransportDistance 1u"kg*m" false
 "Shorthands which may cause confusion in other contexts"
 const m = 1.0u"m"
 const m² = 1.0u"m^2"
@@ -58,6 +65,25 @@ V(r) = 4π / 3 * r^3
 "Density of a sphere"
 ρ(;m=1., r=1.) = m / V(r)
 const ρ_earth = ρ(m = m_earth, r = r_earth)
+
+#=
+We want to print quantities without a space between value and unit.
+This enables copying output for easy redefinitions.
+For easier reading, we'll also put a bit of colour on units.
+julia> 1kg
+1.0kg
+
+julia> 1 kg
+ERROR: syntax: extra token "kg" after end of expression
+=#
+function show(io::IO, x::Quantity)
+    show(io,x.val)
+    if !isunitless(unit(x))
+        printstyled(io, unit(x); color=:cyan)
+    end
+    nothing
+end
+
 "Position vector"
 const Pos = Vector{Quantity{T,𝐋,U}} where {T,U}
 Pos(p::Pos) = Vector(p)
